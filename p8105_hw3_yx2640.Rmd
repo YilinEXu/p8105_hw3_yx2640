@@ -80,13 +80,14 @@ instacart %>%
 	pivot_wider(
 		names_from = order_dow,
 		values_from = mean_hour
-	)
+	) %>% 
+	knitr::kable()
 ```
 
 
 ### Problem 2
 
-* Load, tidy, and otherwise wrangle the data.
+__Load, tidy, and otherwise wrangle the data.__
 ```{r}
 accel =
   read_csv(
@@ -95,13 +96,12 @@ accel =
   janitor::clean_names() %>%
   pivot_longer(
     activity_1:activity_1440,
-    names_to = "activity_ct",
-    values_to = "minute") %>%
+    names_to = "minute",
+    values_to = "activity_ct") %>%
   mutate(
     day_num = recode(day, "Sunday" = "7", "Saturday" = "6", "Friday" = "5", "Monday" = "1", "Tuesday" = "2", "Wednesday" = "3", "Thursday" = "4")) %>%
   arrange(week, day_num) %>%
   select(-day_num) %>%
-  relocate(minute, .before = "activity_ct") %>%
   mutate(
     weekday_vs_weekend = case_when(
     day %in% c("Monday","Tuesday","Wednesday","Thursday","Friday") ~ "weekday",
@@ -110,22 +110,107 @@ accel =
     day = as.factor(day))
 ```
 
-This data collected five weeks of accelerometer data on a 63 year-old male with BMI 25. After tidy the original data, the resulting dataset has `r nrow(accel)` observations and `r ncol(accel)` variables. Day of the week is the only factor class variable. Other then `day`, variables `week`, `day_id` and `minute` are class `numeric`, and variables `activity_ct` and `weekday_vs_weekend` are class `numeric`. Variable `minute` collected 1440 minutes of each day in the `day` variable over five weeks.
+This data collected five weeks of accelerometer data on a 63 year-old male with BMI 25. After tidy the original data, the resulting dataset has `r nrow(accel)` observations and `r ncol(accel)` variables. Day of the week is the only factor class variable. Other then `day`, variables `week`, `day_id` and `activity_ct` are class `numeric`, and variables `minute` and `weekday_vs_weekend` are class `character`. Variable `minute` collected 1440 minutes of each day in the `day` variable over five weeks.
 
 
-*  Aggregate accross minutes to create a total activity variable for each day, and create a table showing these totals.
+__Aggregate accross minutes to create a total activity variable for each day, and create a table showing these totals.__
 ```{r}
-total_active =
-  accel %>%
+total_active = accel %>%
 	group_by(week, day) %>%
-	count(sum(minute)) %>%
+	count(sum(activity_ct)) %>%
+  janitor::clean_names() 
+
+total_active_table = total_active%>%
   mutate(
     day = as.character(day),
     day_num = recode(day, "Sunday" = "7", "Saturday" = "6", "Friday" = "5", "Monday" = "1", "Tuesday" = "2", "Wednesday" = "3", "Thursday" = "4")) %>%
   arrange(week, day_num) %>%
   select(-day_num, -n) %>%
-  janitor::clean_names() %>%
-  pivot_wider(names_from = day, values_from = sum_minute)
+  pivot_wider(names_from = day, values_from = sum_activity_ct)
 
-knitr::kable(total_active)
+knitr::kable(total_active_table)
 ```
+There is no obvious trends just by looking at the table. For example, the Monday of the first week has the least activities, but in the following four weeks, Monday has a relatively higher activity counts compared with other days. There was little activity on the Saturday of the fourth and fifth weeks, but on the Saturday of the second week, activity counts reached its highest level of the week.
+
+
+__Make a single-panel plot__
+```{r}
+accel %>%
+  ggplot(aes(x = minute, y = activity_ct)) +
+  geom_point(aes(color = day)) + 
+  labs(
+    title = "24-hour activity time",
+    x = "Minute of each day",
+    y = "Activity of each minute",
+    caption = "Data from the rnoaa package") +
+  geom_smooth(alpha = 0.5)
+```
+
+From the graph we can see that on Saturday, this male has least activity compared with the other six days.
+
+
+### Problem 3
+
+```{r}
+data("ny_noaa")
+```
+
+__Data cleaning__
+
+```{r}
+my_ny_noaa = ny_noaa %>%
+  separate(date, into = c("year", "month", "day"), convert = TRUE) %>%
+  arrange(year, month) %>%
+  mutate(
+    prcp = as.numeric(prcp/10),
+    tmax = as.numeric(tmax)/10,
+    tmin = as.numeric(tmin)/10
+  )
+
+snow_obs = my_ny_noaa %>%
+	count(snow) %>% 
+	arrange(desc(n))
+```
+
+For snowfall, the most commonly observed value is 0. Since winter takes up only a quarter of the year, and most of the time there's no snow.
+
+
+__Make a two-panel plot__
+```{r}
+Jan_vs_July = my_ny_noaa %>%
+  filter(month %in% c("1", "7")) %>%
+  group_by(id, year, month) %>%
+  summarise(average_tmax = mean(tmax))
+
+  ggplot(Jan_vs_July, aes(x = year, y = average_tmax)) +
+  geom_point() +
+  geom_smooth() +
+  facet_grid(. ~ month) +
+  labs(
+    title = "Average max temperature in January and in July in each station across years",
+    x = "year",
+    y = "average maximum temperature (C)",
+    caption = "Data from the rnoaa package")
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

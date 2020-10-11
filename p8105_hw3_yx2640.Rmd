@@ -205,24 +205,20 @@ As can be seen from the figure above, the highest temperature in January is much
 __Make a two-panel plot showing (i) tmax vs tmin for the full dataset and (ii) make a plot showing the distribution of snowfall values greater than 0 and less than 100 separately by year.__
 
 ```{r}
-par(mfrow=c(1,2))
-# tmax vs tmin bin plot
-ggplot(my_ny_noaa, aes(x = tmax, y = tmin)) + 
-  geom_hex()
-
 # make a plot showing the distribution of snowfall values greater than 0 and less than 100 separately by year
 dis_snow = my_ny_noaa %>%
   filter(snow > 0 & snow <= 100) %>%
   group_by(year)
 
+ggplot(my_ny_noaa, aes(x = tmax, y = tmin)) + 
+  geom_hex() # tmax vs tmin bin plot
+
 ggplot(dis_snow, aes(x = factor(year), y = snow, fill = year)) +
   geom_boxplot()
 
-
 ```
 
-
-
+From the bin plot we can see that most of the time the temperature is around 0 to 25 degrees. Snowfall is quite even for these 20 years. The 25% quantile and 75% quantile are quite similar, and they also have similar median.
 
 
 

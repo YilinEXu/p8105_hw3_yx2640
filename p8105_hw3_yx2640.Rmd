@@ -8,6 +8,8 @@ output: github_document
 ```{r setup, include=FALSE}
 library(tidyverse)
 library(p8105.datasets)
+library(ggridges)
+
 knitr::opts_chunk$set(
 	fig.width = 6, 
   fig.asp = .6,
@@ -146,7 +148,7 @@ accel %>%
   geom_smooth(alpha = 0.5)
 ```
 
-From the graph we can see that on Saturday, this male has least activity compared with the other six days. In terms of point dispersion, there was more activity per minute on Friday and Wednesday. It can be seen from the figure that the amount of activity in the middle period is generally low, which indicates that the man is likely sleeping during this period.
+From the graph we can see that on Saturday, this male has least activity compared with the other six days. This may be due to the lack of data records, or it may be because he really has no activity. In terms of point dispersion, there was more activity per minute on Friday and Wednesday. It can be seen from the figure that the amount of activity in the middle period is generally low, which indicates that the man is likely sleeping during this period.
 
 
 ### Problem 3
@@ -200,8 +202,24 @@ Jan_vs_July = my_ny_noaa %>%
 As can be seen from the figure above, the highest temperature in January is much lower than the highest temperature in July. This is because January is still winter and the temperature is much lower than July, which is in summer. By looking at the overall trend, the highest temperatures in January vary widely from year to year. The fluctuation of temperature is wavy, decreasing year by year and then beginning to rise year by year.The July maximum temperatures were a bit less variable. There is outliers showing in July where the temperature is abnormally low, this could be because the monitoring station recorded data wrong.
 
 
-__Make a two-panel plot showing (i) tmax vs tmin for the full dataset__
+__Make a two-panel plot showing (i) tmax vs tmin for the full dataset and (ii) make a plot showing the distribution of snowfall values greater than 0 and less than 100 separately by year.__
 
+```{r}
+par(mfrow=c(1,2))
+# tmax vs tmin bin plot
+ggplot(my_ny_noaa, aes(x = tmax, y = tmin)) + 
+  geom_hex()
+
+# make a plot showing the distribution of snowfall values greater than 0 and less than 100 separately by year
+dis_snow = my_ny_noaa %>%
+  filter(snow > 0 & snow <= 100) %>%
+  group_by(year)
+
+ggplot(dis_snow, aes(x = factor(year), y = snow, fill = year)) +
+  geom_boxplot()
+
+
+```
 
 
 

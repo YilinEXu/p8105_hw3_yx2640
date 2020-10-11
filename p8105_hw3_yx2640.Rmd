@@ -172,6 +172,10 @@ snow_obs = my_ny_noaa %>%
 	arrange(desc(n))
 ```
 
+This data collected weather data from all New York state weather stations from January 1, 1981 through December 31, 2010. After tidy the original data, the resulting dataset has `r nrow(my_ny_noaa)` observations and `r ncol(my_ny_noaa)` variables. All variables are class `numeric` or `integer`. We separate the date into `year`, `month` and `day` so that the data can then be analyzed in terms of months. The unit for precipitation was "tenths of mm", same as `tmax` and `tmin`which maximum temperature and minimum temperature were both in the unit of "tenths of degrees C". We divided both data by ten, to let their unit can be easier compared with other.
+
+We can find that there is a certain amount of missing data for variables other than station ID and date. The absence of such data may reduce statisticl power and the representativeness of the samples. Due to the missing data, we may not be able to have a more accurate analysis of the trend of temperature, snowfall and other data.
+
 For snowfall, the most commonly observed value is 0. Since winter takes up only a quarter of the year, and most of the time there's no snow.
 
 
@@ -193,9 +197,10 @@ Jan_vs_July = my_ny_noaa %>%
     caption = "Data from the rnoaa package")
 ```
 
+As can be seen from the figure above, the highest temperature in January is much lower than the highest temperature in July. This is because January is still winter and the temperature is much lower than July, which is in summer. By looking at the overall trend, the highest temperatures in January vary widely from year to year. The fluctuation of temperature is wavy, decreasing year by year and then beginning to rise year by year.The July maximum temperatures were a bit less variable. There is outliers showing in July where the temperature is abnormally low, this could be because the monitoring station recorded data wrong.
 
 
-
+__Make a two-panel plot showing (i) tmax vs tmin for the full dataset__
 
 
 

@@ -137,7 +137,7 @@ __Make a single-panel plot__
 ```{r}
 accel %>%
   ggplot(aes(x = minute, y = activity_ct)) +
-  geom_point(aes(color = day)) + 
+  geom_point(aes(color = day)) +
   labs(
     title = "24-hour activity time",
     x = "Minute of each day",
@@ -146,7 +146,7 @@ accel %>%
   geom_smooth(alpha = 0.5)
 ```
 
-From the graph we can see that on Saturday, this male has least activity compared with the other six days.
+From the graph we can see that on Saturday, this male has least activity compared with the other six days. In terms of point dispersion, there was more activity per minute on Friday and Wednesday. It can be seen from the figure that the amount of activity in the middle period is generally low, which indicates that the man is likely sleeping during this period.
 
 
 ### Problem 3
